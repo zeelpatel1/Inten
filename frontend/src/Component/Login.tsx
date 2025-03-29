@@ -1,16 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
-    navigate("/dashboard");
-    localStorage.setItem('user',email)
-    console.log("Logging in with:", { email, password });
+    try {
+      const {data}=await axios.post('http://localhost:3000/api/auth/login',{email,password})
+      localStorage.setItem('user',JSON.stringify({username:data.username,token:data.token}))
+      navigate('/dashboard')
+    } catch (error) {
+      if(error.response){
+        alert(error.response.data.message)
+      }
+      else{
+        navigate('/login')
+      }
+    }
   };
 
   return (
