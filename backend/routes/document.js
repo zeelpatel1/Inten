@@ -55,13 +55,17 @@ router.put('/:id',verifyToken,async(req,res)=>{
     }
 })
 
-router.delete('/:id',verifyToken,async(req,res)=>{
+router.delete('/:id', verifyToken, async (req, res) => {
     try {
-        await Document.findByIdAndUpdate(req.params.id)
-        res.json({message:'Document deleted successfully'})
+      const deletedDoc = await Document.findByIdAndDelete(req.params.id);
+      if (!deletedDoc) {
+        return res.status(404).json({ message: 'Document not found' });
+      }
+      res.json({ message: 'Document deleted successfully' });
     } catch (error) {
-        res.status(500).json({message:'Server error'})
+      res.status(500).json({ message: 'Server error' });
     }
-})
+  });
+  
 
 module.exports=router
